@@ -1,15 +1,15 @@
-# bank_oop.py — новая версия банка с использованием ООП
+# bank_oop.py — обновлённая версия с магическими методами
 
 from datetime import datetime
+import re
 
 
 class BankAccount:
-    """Класс банковского счёта"""
+    """Класс банковского счёта с магическими методами"""
 
-    bank_name = "Банк 'Ученик'"  # атрибут класса
+    bank_name = "Банк 'Ученик'"
 
     def __init__(self, owner, email, phone, initial_balance=0):
-        """Создание нового счёта"""
         self.owner = owner
         self.email = email
         self.phone = phone
@@ -21,8 +21,47 @@ class BankAccount:
         self._add_to_history("СИСТЕМА", f"Аккаунт создан. Баланс: {initial_balance} руб.")
         print(f"🏦 Создан счёт для {self.owner}")
 
+    # ========== МАГИЧЕСКИЕ МЕТОДЫ ==========
+
+    def __str__(self):
+        """Красивое представление для пользователя"""
+        return (f"🏦 Счёт: {self.owner}\n"
+                f"💰 Баланс: {self.balance:.2f} руб.\n"
+                f"🎁 Бонусы: {self.bonus_balance:.2f} руб.")
+
+    def __repr__(self):
+        """Техническое представление для разработчиков"""
+        return f"BankAccount('{self.owner}', '{self.email}', '{self.phone}', {self.balance})"
+
+    def __bool__(self):
+        """Счёт считается истинным, если на нём есть деньги"""
+        return self.balance > 0
+
+    def __add__(self, other):
+        """Сложение: account + account (сумма балансов)"""
+        if isinstance(other, BankAccount):
+            return self.balance + other.balance
+        elif isinstance(other, (int, float)):
+            return self.balance + other
+        else:
+            return NotImplemented
+
+    def __eq__(self, other):
+        """Сравнение по балансу"""
+        if isinstance(other, BankAccount):
+            return self.balance == other.balance
+        return False
+
+    def __lt__(self, other):
+        """Меньше — по балансу"""
+        if isinstance(other, BankAccount):
+            return self.balance < other.balance
+        return False
+
+        # ========== ОСНОВНЫЕ МЕТОДЫ ==========
+
     def _add_to_history(self, operation, details):
-        """Добавляет запись в историю (внутренний метод)"""
+        """Добавляет запись в историю"""
         timestamp = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         self.history.append(f"[{timestamp}] {operation}: {details}")
 
@@ -38,7 +77,6 @@ class BankAccount:
             return
 
         self.balance += amount
-        # Начисляем бонус 1%
         bonus = amount * 0.01
         self.bonus_balance += bonus
         self._add_to_history("ПОПОЛНЕНИЕ", f"{amount} руб. (бонус: {bonus:.2f} руб.)")
@@ -65,8 +103,7 @@ class BankAccount:
             return
 
         self.balance += self.bonus_balance
-        self._add_to_history("БОНУСЫ", f"Использовано "
-                                       f"{self.bonus_balance:.2f} бонусных рублей")
+        self._add_to_history("БОНУСЫ", f"Использовано {self.bonus_balance:.2f} бонусных рублей")
         print(f"✅ Бонусы зачислены! +{self.bonus_balance:.2f} руб.")
         self.bonus_balance = 0
 
@@ -111,34 +148,43 @@ class BankAccount:
         print(f"📅 Дата создания: {self.created_at.strftime('%d.%m.%Y %H:%M:%S')}")
         print(f"📊 Всего операций: {len(self.history)}")
 
-    def change_phone(self, new_phone):
-        pattern = r"^\+7\[0-9]{11}$"
-
 
 # Демонстрация работы
 def main():
     print(f"🏦 Добро пожаловать в {BankAccount.bank_name}!")
 
-    # Создаём двух пользователей
+    # Создаём счета
     alice = BankAccount("Алиса", "alice@mail.com", "+7 999 111-22-33", 5000)
     bob = BankAccount("Боб", "bob@mail.com", "+7 999 444-55-66", 3000)
 
-    # Выполняем операции
     print("\n" + "=" * 50)
-    alice.show_balance()
-    alice.deposit(1000)
-    alice.withdraw(500)
-    alice.use_bonus()
+    print("🔮 ДЕМОНСТРАЦИЯ МАГИЧЕСКИХ МЕТОДОВ")
+    print("=" * 50)
 
-    print("\n" + "=" * 50)
-    alice.transfer(bob, 1000)
+    # __str__ — красивое представление
+    print("\n--- __str__ ---")
+    print(alice)
 
-    print("\n" + "=" * 50)
-    alice.show_history()
-    bob.show_history()
+    # __repr__ — техническое представление
+    print("\n--- __repr__ ---")
+    print(repr(alice))
 
-    print("\n" + "=" * 50)
-    alice.show_info()
+    # __bool__ — проверка на наличие денег
+    print("\n--- __bool__ ---")
+    if alice:
+        print(f"{alice.owner} — на счету есть деньги!")
+    else:
+        print(f"{alice.owner} — счёт пуст!")
+
+    # __add__ — сложение балансов
+    print("\n--- __add__ ---")
+    print(f"Сумма балансов Алисы и Боба: {alice + bob} руб.")
+    print(f"Баланс Алисы + 1000: {alice + 1000} руб.")
+
+    # __eq__ и __lt__ — сравнение
+    print("\n--- __eq__ и __lt__ ---")
+    print(f"Баланс Алисы == Баланс Боба: {alice == bob}")
+    print(f"Баланс Алисы < Баланс Боба: {alice < bob}")
 
 
 if __name__ == "__main__":
