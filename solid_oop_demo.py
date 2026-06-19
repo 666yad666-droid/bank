@@ -1,4 +1,4 @@
-# solid_oop_demo.py — SOLID: O и L с ABC
+# solid_oop_dem.py — SOLID: O и L с ABC
 
 from datetime import datetime
 from solid_oop_demo import ABC, abstractmethod
@@ -69,6 +69,17 @@ class StudentAccount(AccountType):
 
     def get_name(self):
         return "Студенческий"
+
+
+class VipAccount(AccountType):
+    def get_interest_rate(self):
+        return 0.07
+
+    def get_bonus_percent(self):
+        return 0.05
+
+    def get_name(self):
+        return "VIP"
 
 
 # ========== КЛАСС ДЛЯ РАБОТЫ С БАЛАНСОМ (С ЛИМИТОМ БОНУСОВ) ==========
@@ -217,7 +228,7 @@ print("=" * 50)
 
 regular = BankAccount("Алиса", "alice@mail.com", "+7 999 111-22-33", RegularAccount(), 5000)
 gold = BankAccount("Борис", "boris@mail.com", "+7 999 444-55-66", GoldAccount(), 10000)
-
+vip = BankAccount("Илья", 'ila@mail.com', "+7 999 456-65-65", VipAccount(),3000)
 print("\n--- Обычный счёт (Алиса) ---")
 regular.deposit(1000)
 regular.show_balance()
@@ -229,3 +240,6 @@ gold.show_balance()
 print("\n" + "=" * 50)
 print(regular)
 print(gold)
+
+vip.deposit(5000)
+vip.show_balance()
